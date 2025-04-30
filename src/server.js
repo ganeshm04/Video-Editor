@@ -1,5 +1,6 @@
 const app = require('./app');
 const { PrismaClient } = require('@prisma/client');
+const { setupWorkers } = require('./services/queue');
 
 
 const prisma = new PrismaClient();
