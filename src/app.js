@@ -30,4 +30,17 @@ app.use((err, req, res, next) => {
       message: err.message || 'Internal Server Error',
     });
   });
-  
+
+
+// Create required directories if they don't exist
+const fs = require('fs');
+const directories = ['uploads', 'processed', 'subtitles'];
+directories.forEach(dir => {
+  const dirPath = path.join(__dirname, '..', dir);
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true });
+  }
+});
+
+// Export app for testing
+module.exports = app;
