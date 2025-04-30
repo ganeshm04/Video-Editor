@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Processing App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    input, button, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    button {
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .output {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #f9f9f9;
+      border: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Video Processing App</h1>
+
+    <!-- Upload Video -->
+    <div class="form-group">
+      <h3>Upload Video</h3>
+      <input type="file" id="videoFile" accept="video/*">
+      <button onclick="uploadVideo()">Upload</button>
+    </div>
+
+    <!-- Trim Video -->
+    <div class="form-group">
+      <h3>Trim Video</h3>
+      <input type="text" id="videoIdTrim" placeholder="Video ID">
+      <input type="number" id="startTime" placeholder="Start Time (seconds)">
+      <input type="number" id="endTime" placeholder="End Time (seconds)">
+      <button onclick="trimVideo()">Trim</button>
+    </div>
+
+    <!-- Add Subtitles -->
+    <div class="form-group">
+      <h3>Add Subtitles</h3>
+      <input type="text" id="videoIdSubtitle" placeholder="Video ID">
+      <textarea id="subtitleText" placeholder="Subtitle Text"></textarea>
+      <input type="number" id="subtitleStartTime" placeholder="Start Time (seconds)">
+      <input type="number" id="subtitleEndTime" placeholder="End Time (seconds)">
+      <button onclick="addSubtitles()">Add Subtitles</button>
+    </div>
+
+    <!-- Render Video -->
+    <div class="form-group">
+      <h3>Render Video</h3>
+      <input type="text" id="videoIdRender" placeholder="Video ID">
+      <button onclick="renderVideo()">Render</button>
+    </div>
+
+    <!-- Download Video -->
+    <div class="form-group">
+      <h3>Download Video</h3>
+      <input type="text" id="videoIdDownload" placeholder="Video ID">
+      <button onclick="downloadVideo()">Download</button>
+    </div>
+
+    <!-- Output -->
+    <div class="output" id="output"></div>
+  </div>
+
+  <script>
+    const API_BASE_URL = 'http://localhost:3000/api/videos'; // Replace with your backend URL
+
+    // Upload Video
+    async function uploadVideo() {
+      const fileInput = document.getElementById('videoFile');
+      const file = fileInput.files[0];
+      if (!file) {
+        alert('Please select a video file to upload.');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('video', file);
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/upload`, {
+          method: 'POST',
+          body: formData,
+        });
+        const result = await response.json();
+        console.log(result);
+        
+        document.getElementById('output').innerText = JSON.stringify(result);
+      } catch (error) {
+        console.error('Error uploading video:', error);
+      }
+    }
+
+    // Trim Video
+    async function trimVideo() {
+      const videoId = document.getElementById('videoIdTrim').value;
+      const startTime = document.getElementById('startTime').value;
+      const endTime = document.getElementById('endTime').value;
+
+      if (!videoId || !startTime || !endTime) {
+        alert('Please provide video ID, start time, and end time.');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/${videoId}/trim`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ startTime: parseFloat(startTime), endTime: parseFloat(endTime) }),
+        });
+        const result = await response.json();
+        document.getElementById('output').innerText = JSON.stringify(result, null, 2);
+      } catch (error) {
+        console.error('Error trimming video:', error);
+      }
+    }
+
+    // Add Subtitles
+    async function addSubtitles() {
+      const videoId = document.getElementById('videoIdSubtitle').value;
+      const text = document.getElementById('subtitleText').value;
+      const startTime = document.getElementById('subtitleStartTime').value;
+      const endTime = document.getElementById('subtitleEndTime').value;
+
+      if (!videoId || !text || !startTime || !endTime) {
+        alert('Please provide video ID, subtitle text, start time, and end time.');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/${videoId}/subtitles`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text, startTime: parseFloat(startTime), endTime: parseFloat(endTime) }),
+        });
+        const result = await response.json();
+        document.getElementById('output').innerText = JSON.stringify(result, null, 2);
+      } catch (error) {
+        console.error('Error adding subtitles:', error);
+      }
+    }
+
+    // Render Video
+    async function renderVideo() {
+      const videoId = document.getElementById('videoIdRender').value;
+
+      if (!videoId) {
+        alert('Please provide video ID.');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/${videoId}/render`, {
+          method: 'POST',
+        });
+        const result = await response.json();
+        document.getElementById('output').innerText = JSON.stringify(result, null, 2);
+      } catch (error) {
+        console.error('Error rendering video:', error);
+      }
+    }
+
+    // Download Video
+    async function downloadVideo() {
+      const videoId = document.getElementById('videoIdDownload').value;
+
+      if (!videoId) {
+        alert('Please provide video ID.');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/${videoId}/download`);
+        if (response.ok) {
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.style.display = 'none';
+          a.href = url;
+          a.download = `${videoId}_rendered.mp4`;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+        } else {
+          const result = await response.json();
+          document.getElementById('output').innerText = JSON.stringify(result, null, 2);
+        }
+      } catch (error) {
+        console.error('Error downloading video:', error);
+      }
+    }
+  </script>
+</body>
+</html>
