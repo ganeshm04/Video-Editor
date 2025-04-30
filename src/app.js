@@ -10,7 +10,6 @@ const videoRoutes = require('./routes/videoRoutes');
 const app = express();
 const prisma = new PrismaClient();
 
-
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -22,15 +21,26 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use('/processed', express.static(path.join(__dirname, '../processed')));
 app.use('/subtitles', express.static(path.join(__dirname, '../subtitles')));
 
+
+// Routes
+app.use('/api/videos', videoRoutes);
+
 // Error handling middleware
 app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(err.statusCode || 500).json({
-      success: false,
-      message: err.message || 'Internal Server Error',
-    });
+  console.error(err.stack);
+  res.status(err.statusCode || 500).json({
+    success: false,
+    message: err.message || 'Internal Server Error',
   });
+});
 
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: 'Not Found',
+  });
+});
 
 // Create required directories if they don't exist
 const fs = require('fs');

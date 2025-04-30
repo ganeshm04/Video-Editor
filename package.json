@@ -7,7 +7,13 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js"
   },
-  "keywords": [],
+  "keywords": [
+    "video",
+    "ffmpeg",
+    "express",
+    "prisma",
+    "postgres"
+  ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",

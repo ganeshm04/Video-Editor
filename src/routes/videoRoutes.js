@@ -118,31 +118,6 @@ router.post('/:id/render', videoController.renderVideo);
  */
 router.get('/:id/download', videoController.downloadVideo);
 
-/**
- * 
- * /api/videos:
- *   get:
- *     summary: Get all videos
- *     responses:
- *       200:
- *         description: List of all videos
- */
-router.get('/', videoController.getAllVideos);
 
-/**
- * 
- * /api/videos/{id}:
- *   get:
- *     summary: Get a video by ID
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: ID of the video
- *     responses:
- *       200:
- *         description: Video details
- */
-router.get('/:id', videoController.getVideoById);
 
 module.exports = router;

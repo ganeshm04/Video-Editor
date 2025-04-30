@@ -128,6 +128,8 @@ exports.addSubtitles = async (req, res, next) => {
   }
 };
 
+
+
 // Render final video
 exports.renderVideo = async (req, res, next) => {
   try {
@@ -228,51 +230,6 @@ exports.downloadVideo = async (req, res, next) => {
     
     const fileStream = fs.createReadStream(video.renderedPath);
     fileStream.pipe(res);
-  } catch (error) {
-    next(error);
-  }
-};
-
-// Get all videos
-exports.getAllVideos = async (req, res, next) => {
-  try {
-    const videos = await prisma.video.findMany({
-      orderBy: {
-        createdAt: 'desc'
-      }
-    });
-
-    res.status(200).json({
-      success: true,
-      count: videos.length,
-      data: videos
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-// Get video by ID
-exports.getVideoById = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-
-    const video = await prisma.video.findUnique({
-      where: { id },
-      include: {
-        edits: true,
-        subtitles: true
-      }
-    });
-
-    if (!video) {
-      return next(new AppError('Video not found', 404));
-    }
-
-    res.status(200).json({
-      success: true,
-      data: video
-    });
   } catch (error) {
     next(error);
   }
