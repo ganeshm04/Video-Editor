@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+
+model Video {
+  id           String         @id @default(uuid())
+  name         String
+  originalPath String
+  size         Int
+  duration     Float
+  status       VideoStatus    @default(UPLOADED)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  edits        Edit[]
+  subtitles    Subtitle[]
+  renderedPath String?
+}
+
+model Edit {
+  id        String   @id @default(uuid())
+  videoId   String
+  video     Video    @relation(fields: [videoId], references: [id])
+  type      EditType
+  startTime Float
+  endTime   Float
+  path      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Subtitle {
+  id        String   @id @default(uuid())
+  videoId   String
+  video     Video    @relation(fields: [videoId], references: [id])
+  text      String
+  startTime Float
+  endTime   Float
+  path      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum VideoStatus {
+  UPLOADED
+  PROCESSING
+  RENDERED
+  FAILED
+}
+
+enum EditType {
+  TRIM
+  SUBTITLE
+}
