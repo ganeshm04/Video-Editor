@@ -2,7 +2,7 @@
 
 ## Overview
 
-The **Video Editor Application** is a backend service designed to handle video processing tasks such as uploading, trimming, adding subtitles, rendering, and downloading videos. It is built using **Node.js**, **Express.js**, **Prisma ORM**, and **FFmpeg**, with **PostgreSQL** as the database. The application supports asynchronous job processing using **BullMQ** for scalable video rendering.
+The **Video Editor Application** is a backend service designed to handle video processing tasks such as uploading, trimming, adding subtitles, rendering, and downloading videos. It is built using **Node.js**, **Express.js**, **Prisma ORM**, and **FFmpeg**, with **PostgreSQL(Supabase)** as the database. The application supports asynchronous job processing using **BullMQ** for scalable video rendering.
 
 ---
 
@@ -23,6 +23,7 @@ The **Video Editor Application** is a backend service designed to handle video p
 4. **Rendering Final Video**:
    - Combine all edits (e.g., trims, subtitles) into a single final video.
    - Supports asynchronous processing using **BullMQ**.
+   - Not implemented properly
 
 5. **Downloading Rendered Videos**:
    - Download the final rendered video.
@@ -161,13 +162,5 @@ REDIS_HOST	    Redis host for BullMQ
 REDIS_PORT	    Redis port for BullMQ
 
 
-## Dependencies
 
-1. Core:
-    express, prisma, fluent-ffmpeg
-
-2. Utilities:
-    dotenv, multer, uuid, morgan
-3. Database:
-    pg (PostgreSQL driver)
 
